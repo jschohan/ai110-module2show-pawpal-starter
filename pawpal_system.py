@@ -10,6 +10,7 @@ class Task:
     time: time
     frequency: str = "once"  # e.g. "once", "daily", "weekly"
     completed: bool = False
+    pet_name: str = ""  # set by Pet.add_task
 
     def mark_complete(self) -> None:
         self.completed = True
@@ -22,10 +23,10 @@ class Task:
 class Pet:
     """A pet and the tasks assigned to it."""
     name: str
-    species: str = ""
     tasks: List[Task] = field(default_factory=list)
 
     def add_task(self, task: Task) -> None:
+        task.pet_name = self.name
         self.tasks.append(task)
 
     def remove_task(self, task: Task) -> None:
