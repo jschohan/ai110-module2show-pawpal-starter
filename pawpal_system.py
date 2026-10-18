@@ -24,7 +24,7 @@ class Owner:
 
 @dataclass
 class Scheduler:
-    tasks: List[Task] = field(default_factory=list)
+    owner: Owner
 
     def generate_daily_plan(self) -> List[Task]:
         pass
