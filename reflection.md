@@ -14,6 +14,8 @@ My initial plan is to have 3 classes - Pet, Owner, Task, and Plan. The pet class
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+The Claude Code review of my skeleton pointed out that scheduler does not have any link
+to the owners or pets that a task belongs to, it only stores a list of tasks. As suggested, I changed scheduler to instead pull tasks from the owner's list of pets.
 
 ---
 
