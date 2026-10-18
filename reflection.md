@@ -6,6 +6,9 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+3 core actions a user should be able to perform are to add their pet, add and edit tasks as well as set priorities for the tasks, and the user should be able to generate a daily plan.
+
+My initial plan is to have 3 classes - Pet, Owner, Task, and Plan. The pet class will have variables to store name, species, and tasks. Owner will store name and pets. The task class will store task names, priority, and times. The Plan class will store tasks and generate a plan with those tasks.
 
 **b. Design changes**
 
