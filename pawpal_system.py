@@ -20,7 +20,13 @@ class Task:
         self.completed = False
 
     def next_occurrence(self) -> Optional["Task"]:
-        """A fresh copy due today + 1 day (daily) or + 7 days (weekly); None otherwise."""
+        """Build the next occurrence of a recurring task.
+
+        Returns a new, incomplete Task with the same description, time and
+        frequency, due today + 1 day ("daily") or today + 7 days ("weekly").
+        Returns None for any other frequency (e.g. "once"). The new task is
+        not attached to a pet; Scheduler.mark_task_complete does that.
+        """
         days = {"daily": 1, "weekly": 7}.get(self.frequency)
         if days is None:
             return None
@@ -78,7 +84,13 @@ class Scheduler:
         return [t for t in self.get_all_tasks() if not t.completed]
 
     def mark_task_complete(self, task: Task) -> Optional[Task]:
-        """Complete a task; for daily/weekly tasks, add and return the next occurrence."""
+        """Mark a task complete and schedule its next occurrence if it recurs.
+
+        For "daily" and "weekly" tasks, the next occurrence (see
+        Task.next_occurrence) is added to the same pet that owns `task`.
+        Returns the new task, or None if the task doesn't recur or no pet
+        owns it. Call this instead of Task.mark_complete() to get recurrence.
+        """
         task.mark_complete()
         nxt = task.next_occurrence()
         if nxt is not None:
@@ -88,11 +100,18 @@ class Scheduler:
         return nxt
 
     def sort_by_time(self, tasks: Optional[List[Task]] = None) -> List[Task]:
+        """Return tasks ordered by time of day, earliest first.
+
+        Sorts `tasks` if given, otherwise every task across all pets. Returns
+        a new list and leaves the input unchanged. Ties keep their original
+        order (stable sort). Sorts on time only, not due_date.
+        """
         if tasks is None:
             tasks = self.get_all_tasks()
         return sorted(tasks, key=lambda t: t.time)
 
     def filter_by_pet(self, pet_name: str) -> List[Task]:
+        """Return all tasks belonging to the pet with this name (any status)."""
         return [
             task
             for pet in self.owner.pets
@@ -105,9 +124,15 @@ class Scheduler:
         completed: Optional[bool] = None,
         pet_name: Optional[str] = None,
     ) -> List[Task]:
-        """Filter tasks by completion status and/or pet name.
+        """Filter all tasks by completion status and/or pet name.
 
-        A criterion left as None is ignored; both given means both must match.
+        Args:
+            completed: True for finished tasks, False for pending ones,
+                None to ignore completion status.
+            pet_name: Keep only this pet's tasks, or None to include all pets.
+
+        Returns tasks in storage order (use sort_by_time to order them). When
+        both criteria are given, a task must match both.
         """
         tasks = self.get_all_tasks()
         if completed is not None:
@@ -117,9 +142,14 @@ class Scheduler:
         return tasks
 
     def detect_conflicts(self) -> List[str]:
-        """Lightweight check: a warning string for each date/time slot that has
-        more than one pending task (same pet or different pets). Returns an
-        empty list when there are no conflicts; never raises.
+        """Find pending tasks scheduled at the same date and time.
+
+        Groups pending tasks by (due_date, time); every slot holding more than
+        one task, for the same pet or different pets, yields one warning
+        string naming the clashing tasks. Completed tasks are ignored.
+        Returns an empty list when there are no conflicts and never raises.
+        Only exact start-time matches are detected; tasks have no duration,
+        so partial overlaps are not caught. Runs in O(n).
         """
         slots: dict = {}
         for t in self.get_pending_tasks():
@@ -132,7 +162,11 @@ class Scheduler:
         ]
 
     def generate_daily_plan(self) -> List[Task]:
-        """Pending tasks due today or earlier across all pets, ordered by time."""
+        """Return today's plan: pending tasks due today or earlier, by time.
+
+        Future-dated tasks (e.g. the next occurrence of a daily task) are
+        excluded until their due date arrives.
+        """
         today = date.today()
         due = [t for t in self.get_pending_tasks() if t.due_date <= today]
         return self.sort_by_time(due)

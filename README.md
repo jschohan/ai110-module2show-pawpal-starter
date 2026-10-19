@@ -96,10 +96,10 @@ Sample test output:
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | sort_by_time() | sorts task by pet name or time |
+| Filtering | filter_tasks() | filters tasks by completion or pet names |
+| Conflict handling | detect_conflicts() | detects same start time tasks |
+| Recurring tasks | next_occurence() | creates a new task for reccurence |
 
 ## 📸 Demo Walkthrough
 

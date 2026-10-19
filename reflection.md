@@ -30,6 +30,7 @@ to the owners or pets that a task belongs to, it only stores a list of tasks. As
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+One tradeoff that my scheduler makes is that it only detects when multiple tasks start at the same time and not when they overlap. To find overlap we would have to add an attribute for duration in addition to start times.
 
 ---
 
