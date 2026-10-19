@@ -23,7 +23,9 @@ class Task:
         """Build the next occurrence of a recurring task.
 
         Returns a new, incomplete Task with the same description, time and
-        frequency, due today + 1 day ("daily") or today + 7 days ("weekly").
+        frequency, due 1 day ("daily") or 7 days ("weekly") after the later of
+        this task's due date and today, so it is never scheduled in the past
+        and an early completion keeps the original cadence.
         Returns None for any other frequency (e.g. "once"). The new task is
         not attached to a pet; Scheduler.mark_task_complete does that.
         """
@@ -34,7 +36,7 @@ class Task:
             description=self.description,
             time=self.time,
             frequency=self.frequency,
-            due_date=date.today() + timedelta(days=days),
+            due_date=max(self.due_date, date.today()) + timedelta(days=days),
         )
 
 
@@ -88,9 +90,12 @@ class Scheduler:
 
         For "daily" and "weekly" tasks, the next occurrence (see
         Task.next_occurrence) is added to the same pet that owns `task`.
-        Returns the new task, or None if the task doesn't recur or no pet
-        owns it. Call this instead of Task.mark_complete() to get recurrence.
+        Returns the new task, or None if the task doesn't recur, no pet owns
+        it, or it was already complete (so repeat calls don't duplicate it).
+        Call this instead of Task.mark_complete() to get recurrence.
         """
+        if task.completed:
+            return None
         task.mark_complete()
         nxt = task.next_occurrence()
         if nxt is not None:
@@ -134,11 +139,16 @@ class Scheduler:
         Returns tasks in storage order (use sort_by_time to order them). When
         both criteria are given, a task must match both.
         """
-        tasks = self.get_all_tasks()
+        # Match on the owning Pet, not Task.pet_name, which is only set by
+        # Pet.add_task and is empty for tasks appended to pet.tasks directly.
+        tasks = [
+            task
+            for pet in self.owner.pets
+            if pet_name is None or pet.name == pet_name
+            for task in pet.tasks
+        ]
         if completed is not None:
             tasks = [t for t in tasks if t.completed == completed]
-        if pet_name is not None:
-            tasks = [t for t in tasks if t.pet_name == pet_name]
         return tasks
 
     def detect_conflicts(self) -> List[str]:
