@@ -22,6 +22,17 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Implementation summary
+
+The backend lives in [pawpal_system.py](pawpal_system.py) and is built from four small classes:
+
+- **Task**: one care activity (description, time, frequency, completed flag). It knows which pet it belongs to via `pet_name` and can mark itself complete or incomplete.
+- **Pet**: owns a list of `Task`s. `add_task` attaches a task and stamps it with the pet's name; `remove_task` detaches it.
+- **Owner**: owns a list of `Pet`s and exposes `get_all_tasks()`, which flattens every pet's tasks into one list.
+- **Scheduler**: the "brain." It holds an `Owner` and always reads tasks through it, so every pet is included. It can get pending tasks, sort by time, filter by pet, and `generate_daily_plan()` (pending tasks across all pets, ordered by time).
+
+**How they fit together:** `Owner` → `Pet` → `Task` is a containment chain (an owner has pets, a pet has tasks). `Scheduler` sits on top and never stores tasks itself. It queries the owner, then sorts and filters the results, so the plan always reflects the current state of the owner's pets.
+
 ## Getting started
 
 ### Setup

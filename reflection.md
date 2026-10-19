@@ -38,13 +38,18 @@ to the owners or pets that a task belongs to, it only stores a list of tasks. As
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+I used AI during every phase of the project. I started by brainstorming classes and attributes then asked AI to generate a UML diagram based on that description. Then I 
+asked it to implement a skeleton using that diagram, then I asked it implement the logic. I also used it for refactoring my main file to display a cleaner print message
+to the terminal.
+
 - What kinds of prompts or questions were most helpful?
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
+Based on my prompts, AI only made edits that I asked it to. I did not find any unwanted edits or functionality so I accepted the suggestions as is.
 - How did you evaluate or verify what the AI suggested?
-
+I read through the code and ran the tests that it generated. 
 ---
 
 ## 4. Testing and Verification
