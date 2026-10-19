@@ -103,12 +103,21 @@ Sample test output:
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+Features
+Sorting by time: Tasks are ordered by time of day, earliest first. The sort is stable, so tasks at the same time keep the order they were added in. It sorts on time only, not date. The "Current tasks" table and the daily plan both use it.
+Filtering by pet and status: You can narrow the task list by pet, by status (Pending or Completed), or by both at once. A task has to match both filters to show. Pet filtering reads from each pet's own task list, so it doesn't depend on a task's pet_name field.
+Conflict warnings: Pending tasks are grouped by exact date and start time. Any slot holding more than one task produces a warning naming the clashing tasks and their pets. This covers clashes for the same pet and across different pets. Completed tasks are ignored, and the check is a single pass over the tasks (O(n)). The warnings appear in the UI with a suggestion to move one task. Daily and weekly recurrence: When you complete a "daily" or "weekly" task, a new task is created automatically for the same pet. It is due 1 or 7 days after the later of the original due date and today. That keeps the cadence if you finish early, and it never schedules a task in the past. One-time tasks don't repeat. Marking an already-completed task complete again does not create a duplicate.
+Today's schedule: "Generate schedule" lists pending tasks due today or earlier, sorted by time. Future-dated tasks, such as tomorrow's recurrence of a daily task, stay hidden until their due date.
+Multi-pet management: One owner can have several pets, each with its own tasks. The scheduler reads across all of them. The app rejects duplicate pet names, empty pet names, and empty task descriptions.
+Live task summary: The app shows metrics for total, pending and completed tasks. You can toggle tasks complete or incomplete, and the table, metrics and conflict warnings refresh right away.
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+Describe your app in numbered steps so a reader can follow along without watching a video:
+1. Type name of owner of pets
+2. Type the name of pet and click add
+3. Use the tasks section to select a pet then describe the task
+and details pertaining to the task.
+4. In the scheduler use the drop-downs to add filters to the 
+daily plan that will be generated if needed. Click generate daily schedule.
+
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->

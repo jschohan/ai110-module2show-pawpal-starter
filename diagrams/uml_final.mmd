@@ -20,20 +20,27 @@ classDiagram
         +String frequency
         +bool completed
         +String pet_name
+        +date due_date
         +mark_complete()
         +mark_incomplete()
+        +next_occurrence() Task
     }
 
     class Scheduler {
         +Owner owner
         +get_all_tasks() List~Task~
         +get_pending_tasks() List~Task~
+        +mark_task_complete(task) Task
         +sort_by_time(tasks) List~Task~
         +filter_by_pet(pet_name) List~Task~
+        +filter_tasks(completed, pet_name) List~Task~
+        +detect_conflicts() List~String~
         +generate_daily_plan() List~Task~
     }
 
     Owner "1" *-- "0..*" Pet : owns
     Pet "1" *-- "0..*" Task : has
     Scheduler "1" --> "1" Owner : plans for
-    Scheduler ..> Task : organizes
+    Scheduler ..> Task : sorts, filters, detects conflicts
+    Scheduler ..> Pet : adds next recurring task
+    Task ..> Task : next_occurrence creates

@@ -25,6 +25,8 @@ to the owners or pets that a task belongs to, it only stores a list of tasks. As
 
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
+My scheduler considers time to create the schedule. I decieded this mattered the most because tasks should be completed in the order
+that they are required. If a task is high priority it can simply be scheduled to the earliest time. 
 
 **b. Tradeoffs**
 
@@ -44,13 +46,16 @@ asked it to implement a skeleton using that diagram, then I asked it implement t
 to the terminal.
 
 - What kinds of prompts or questions were most helpful?
+Prompting the AI to make changes with specific instructions for the functionality of the chanegs were the most helpful. Also prompting the AI
+when to plan versus make changes. This allowed me to review changes before adding them to the file so that I can ensure I understand the 
+code. 
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
-Based on my prompts, AI only made edits that I asked it to. I did not find any unwanted edits or functionality so I accepted the suggestions as is.
+Based on my prompts, AI only made edits that I asked it to. I did not find any unwanted edits or functionality so I accepted the suggestions as is. One time I did not accept a suggestion was a 'fix' that stated my reoccuring task logic was incorrect. The AI failed to understand that if a task is overdue by 3 days of the 'duedate' it would not make sense to reschedule it for the duedate + 1 day. Since that would mean it is still overdue. 
 - How did you evaluate or verify what the AI suggested?
-I read through the code and ran the tests that it generated. 
+I read through the code and ran the tests that it generated. I also asked clarifying questions based on the code suggested which sometimes exposed oversights made by the AI or inaccurate understanding of the prompt/goal.
 ---
 
 ## 4. Testing and Verification
@@ -59,11 +64,13 @@ I read through the code and ran the tests that it generated.
 
 - What behaviors did you test?
 - Why were these tests important?
+I tested the UI to System wiring manually, this was important since the test cases only cover the system logic.
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
 - What edge cases would you test next if you had more time?
+I am confident that my scheduler works correctly though there are some features that were not implemented or covered. I would test the UI more with time and test the functionality of switching between owner objects and ensure that pets are correctly stored per owner and not just per session.
 
 ---
 
@@ -72,11 +79,13 @@ I read through the code and ran the tests that it generated.
 **a. What went well**
 
 - What part of this project are you most satisfied with?
-
+I am most satisifed with writing a backend then creating a UI that reflects that backend. 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
-
+I would improve the 'wiring' between the UI and backend as I believe some functions aren't actually made available to a user in the 
+streamlit UI. 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+One important thing I learned was how complicated it can be to design an entire app even while working with AI. It is also important to be very specific with prompts to ensure that the app has the intended functionality. Also, even though the AI is great at generating tests for the system logic that was written, the UI testing requires a human.
