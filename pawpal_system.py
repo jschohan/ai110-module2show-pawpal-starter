@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import time
+from datetime import date, time, timedelta
 from typing import List, Optional
 
 
@@ -11,12 +11,25 @@ class Task:
     frequency: str = "once"  # e.g. "once", "daily", "weekly"
     completed: bool = False
     pet_name: str = ""  # set by Pet.add_task
+    due_date: date = field(default_factory=date.today)
 
     def mark_complete(self) -> None:
         self.completed = True
 
     def mark_incomplete(self) -> None:
         self.completed = False
+
+    def next_occurrence(self) -> Optional["Task"]:
+        """A fresh copy due today + 1 day (daily) or + 7 days (weekly); None otherwise."""
+        days = {"daily": 1, "weekly": 7}.get(self.frequency)
+        if days is None:
+            return None
+        return Task(
+            description=self.description,
+            time=self.time,
+            frequency=self.frequency,
+            due_date=date.today() + timedelta(days=days),
+        )
 
 
 @dataclass
@@ -64,6 +77,16 @@ class Scheduler:
     def get_pending_tasks(self) -> List[Task]:
         return [t for t in self.get_all_tasks() if not t.completed]
 
+    def mark_task_complete(self, task: Task) -> Optional[Task]:
+        """Complete a task; for daily/weekly tasks, add and return the next occurrence."""
+        task.mark_complete()
+        nxt = task.next_occurrence()
+        if nxt is not None:
+            pet = next((p for p in self.owner.pets if task in p.tasks), None)
+            if pet is not None:
+                pet.add_task(nxt)
+        return nxt
+
     def sort_by_time(self, tasks: Optional[List[Task]] = None) -> List[Task]:
         if tasks is None:
             tasks = self.get_all_tasks()
@@ -77,6 +100,24 @@ class Scheduler:
             for task in pet.tasks
         ]
 
+    def filter_tasks(
+        self,
+        completed: Optional[bool] = None,
+        pet_name: Optional[str] = None,
+    ) -> List[Task]:
+        """Filter tasks by completion status and/or pet name.
+
+        A criterion left as None is ignored; both given means both must match.
+        """
+        tasks = self.get_all_tasks()
+        if completed is not None:
+            tasks = [t for t in tasks if t.completed == completed]
+        if pet_name is not None:
+            tasks = [t for t in tasks if t.pet_name == pet_name]
+        return tasks
+
     def generate_daily_plan(self) -> List[Task]:
-        """Pending tasks across all pets, ordered by time."""
-        return self.sort_by_time(self.get_pending_tasks())
+        """Pending tasks due today or earlier across all pets, ordered by time."""
+        today = date.today()
+        due = [t for t in self.get_pending_tasks() if t.due_date <= today]
+        return self.sort_by_time(due)
