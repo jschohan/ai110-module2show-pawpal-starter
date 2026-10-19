@@ -116,6 +116,21 @@ class Scheduler:
             tasks = [t for t in tasks if t.pet_name == pet_name]
         return tasks
 
+    def detect_conflicts(self) -> List[str]:
+        """Lightweight check: a warning string for each date/time slot that has
+        more than one pending task (same pet or different pets). Returns an
+        empty list when there are no conflicts; never raises.
+        """
+        slots: dict = {}
+        for t in self.get_pending_tasks():
+            slots.setdefault((t.due_date, t.time), []).append(t)
+        return [
+            f"Warning: {len(group)} tasks at {when:%H:%M} on {day}: "
+            + ", ".join(f"{t.pet_name} - {t.description}" for t in group)
+            for (day, when), group in slots.items()
+            if len(group) > 1
+        ]
+
     def generate_daily_plan(self) -> List[Task]:
         """Pending tasks due today or earlier across all pets, ordered by time."""
         today = date.today()

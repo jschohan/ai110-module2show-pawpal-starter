@@ -78,3 +78,10 @@ print(f"  Tasks now: {len(planner.get_all_tasks())}")
 print("  Pending tasks with due dates:")
 for t in planner.sort_by_time(planner.filter_tasks(completed=False)):
     print(f"    {t.due_date}  {t.time:%H:%M}  {t.pet_name:<6} {t.description} ({t.frequency})")
+
+# Conflict detection returns warnings instead of raising.
+print("\n>>> Conflict detection")
+print("  Before adding clashes:", planner.detect_conflicts() or "none")
+jerry.add_task(Task("Vet call", time(14, 0)))   # same time as Tom's Exercise
+for warning in planner.detect_conflicts():
+    print(" ", warning)
